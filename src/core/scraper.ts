@@ -1,10 +1,9 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import puppeteer from 'puppeteer-extra'
-import UserAgent from 'user-agents'
-import { RequireAtLeastOne } from '~/types/utils'
-import validateUrl from '~/utils/validate-url'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import UserAgent from 'user-agents'
 import { PrismaService } from '~/services/prismaService'
+import { RequireAtLeastOne } from '~/types/utils'
 
 puppeteer.use(StealthPlugin())
 /**
@@ -36,19 +35,10 @@ export class Scraper {
     this.id = id
     this.name = name
     this.userAgentGenerator = new UserAgent()
-    this.#validate()
     this.#prismaService = new PrismaService()
   }
 
   async init() {
     await this.#prismaService.onModuleInit()
-  }
-
-  protected async scrapePages(scrapeFn: (page: number) => Promise<void>, numOfPages: number) {}
-
-  #validate() {
-    if (!validateUrl(this.baseURL)) {
-      throw new Error('Invalid baseURL')
-    }
   }
 }
