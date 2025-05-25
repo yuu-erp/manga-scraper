@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import puppeteer from 'puppeteer-extra'
 import StealthPlugin from 'puppeteer-extra-plugin-stealth'
 import UserAgent from 'user-agents'
-import { PrismaService } from '~/services/prismaService'
+import { PrismaService } from '~/services/prisma.service'
 import { RequireAtLeastOne } from '~/types/utils'
 
 puppeteer.use(StealthPlugin())
@@ -36,6 +36,7 @@ export class Scraper {
     this.name = name
     this.userAgentGenerator = new UserAgent()
     this.#prismaService = new PrismaService()
+
   }
 
   async init() {
