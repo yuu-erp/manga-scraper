@@ -1,9 +1,38 @@
-version: '3.8'
+version: '3.9'
 
 services:
   scraper:
-    build: .
-    container_name: scraper-manga
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scraper-app
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/scraperdb
+    depends_on:
+      - db
+    restart: unless-stopped
+    ports:
+      - "3000:3000" # đổi nếu app của bạn chạy ở cổng khác
+    networks:
+      - scraper-network
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: scraperdb
+    ports:
+      - "5432:5432"
     volumes:
-      - .:/app
-    command: npm run dev
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - scraper-network
+
+volumes:
+  postgres_data:
+
+networks:
+  scraper-network:

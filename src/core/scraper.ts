@@ -1,11 +1,12 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-import puppeteer from 'puppeteer-extra';
-import UserAgent from 'user-agents';
-import { RequireAtLeastOne } from '~/types/utils';
-import validateUrl from '~/utils/validate-url';
-import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
+import puppeteer from 'puppeteer-extra'
+import UserAgent from 'user-agents'
+import { RequireAtLeastOne } from '~/types/utils'
+import validateUrl from '~/utils/validate-url'
+import StealthPlugin from 'puppeteer-extra-plugin-stealth'
+import { PrismaService } from '~/services/prismaService'
 
-puppeteer.use(StealthPlugin());
+puppeteer.use(StealthPlugin())
 /**
  * A class for web scraping with a pre-configured Axios instance.
  * @param id - Unique identifier for the scraper.
@@ -18,6 +19,7 @@ export class Scraper {
   name: string
   baseURL: string
   userAgentGenerator: UserAgent
+  #prismaService: PrismaService
   constructor(id: string, name: string, axiosConfig: RequireAtLeastOne<AxiosRequestConfig, 'baseURL'>) {
     const config = {
       headers: {
@@ -29,18 +31,20 @@ export class Scraper {
       timeout: 20000,
       ...axiosConfig
     }
-    this.client = axios.create(config);
+    this.client = axios.create(config)
     this.baseURL = axiosConfig.baseURL
-    this.id = id;
-    this.name = name;
-    this.userAgentGenerator = new UserAgent();
+    this.id = id
+    this.name = name
+    this.userAgentGenerator = new UserAgent()
     this.#validate()
+    this.#prismaService = new PrismaService()
   }
 
-  protected async scrapePages(scrapeFn: (page: number) => Promise<void>, numOfPages: number) {
-
+  async init() {
+    await this.#prismaService.onModuleInit()
   }
 
+  protected async scrapePages(scrapeFn: (page: number) => Promise<void>, numOfPages: number) {}
 
   #validate() {
     if (!validateUrl(this.baseURL)) {
