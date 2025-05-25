@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  scraper:
+    build: .
+    container_name: scraper-manga
+    volumes:
+      - .:/app
+    command: npm run dev
